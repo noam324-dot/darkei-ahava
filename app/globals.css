@@ -380,6 +380,50 @@ h4 {
   background: rgba(220, 232, 212, 0.28);
 }
 
+.prep-screen {
+  gap: 18px;
+}
+
+.prep-copy {
+  display: grid;
+  gap: 10px;
+}
+
+.prep-copy h2 {
+  margin-bottom: 2px;
+}
+
+.prep-copy p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.04rem;
+  line-height: 1.78;
+}
+
+.ready-check {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background:
+    linear-gradient(180deg, rgba(255, 254, 250, 0.94), rgba(255, 254, 250, 0.74)),
+    var(--paper-soft);
+  box-shadow: var(--shadow-xs);
+  cursor: pointer;
+  font-weight: 850;
+  line-height: 1.45;
+}
+
+.ready-check input {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  accent-color: var(--olive-dark);
+}
+
 .selection-prompt {
   margin-bottom: 8px;
   color: #4d433b;

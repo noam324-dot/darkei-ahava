@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import intro from "../content/intro.json";
 import men from "../content/men.json";
 import women from "../content/women.json";
@@ -19,6 +19,7 @@ type CoupleScreen =
   | "welcome"
   | "intro"
   | "participant"
+  | "prep"
   | "quiz"
   | "results"
   | "gestureIdeas"
@@ -248,7 +249,7 @@ export default function CoupleApp() {
       genderTrack,
       questionIndex: 0,
       answers: {},
-      screen: "quiz",
+      screen: "prep",
     }));
   }
 
@@ -310,6 +311,13 @@ export default function CoupleApp() {
           <ParticipantScreen onBack={() => goTo("intro")} onStart={startQuiz} />
         )}
 
+        {currentScreen === "prep" && (
+          <PreparationScreen
+            onBack={() => goTo("participant")}
+            onNext={() => goTo("quiz")}
+          />
+        )}
+
         {currentScreen === "quiz" && (
           <QuizScreen
             answers={typedIntro.answers}
@@ -321,7 +329,7 @@ export default function CoupleApp() {
             onAnswer={answerCurrent}
             onBack={() =>
               state.questionIndex === 0
-                ? goTo("participant")
+                ? goTo("prep")
                 : setState((current) => ({
                     ...current,
                     questionIndex: current.questionIndex - 1,
@@ -502,6 +510,59 @@ function ParticipantScreen({
       <button className="ghost-button" type="button" onClick={onBack}>
         חזרה
       </button>
+    </div>
+  );
+}
+
+function PreparationScreen({
+  onBack,
+  onNext,
+}: {
+  onBack: () => void;
+  onNext: () => void;
+}) {
+  const [isReady, setIsReady] = useState(false);
+
+  return (
+    <div className="screen-block prep-screen">
+      <div className="welcome-heart" aria-hidden="true">
+        ❤️
+      </div>
+      <div className="prep-copy">
+        <h2>רגע לפני שמתחילים ❤️</h2>
+        <p>קחו לעצמכם כ־15 דקות של שקט.</p>
+        <p>שבו אחד ליד השני עם טלפון אחד.</p>
+        <p>
+          בחרו מי יתחיל, ולאחר שהוא יסיים פשוט העבירו את הטלפון לבן או בת
+          הזוג.
+        </p>
+        <p>
+          אל תנסו להשפיע על הבחירות של השני – זו הזדמנות להכיר טוב יותר את
+          הדרך שבה כל אחד מכם מרגיש אהוב.
+        </p>
+        <p>בהצלחה! ❤️</p>
+      </div>
+      <label className="ready-check">
+        <input
+          checked={isReady}
+          type="checkbox"
+          onChange={(event) => setIsReady(event.target.checked)}
+        />
+        <span>אנחנו יושבים יחד ואפשר להתחיל</span>
+      </label>
+      <div className="footer-actions">
+        <button className="ghost-button" type="button" onClick={onBack}>
+          חזרה
+        </button>
+        <button
+          className="primary-button"
+          disabled={!isReady}
+          type="button"
+          onClick={onNext}
+        >
+          אנחנו מוכנים להתחיל ❤️
+        </button>
+      </div>
     </div>
   );
 }
@@ -888,6 +949,7 @@ function getScreenLabel(screen: CoupleScreen) {
     welcome: "פתיחה",
     intro: "משתתף",
     participant: "משתתף",
+    prep: "הכנה",
     quiz: "שאלון",
     results: "תוצאות",
     gestureIdeas: "מחוות",
