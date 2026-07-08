@@ -740,11 +740,13 @@ function FinishScreen({
         ❤️
       </div>
       <div>
-        <h1>האהבה מתחילה בבית</h1>
+        <h1>כל הכבוד</h1>
         <p className="lead-text">
-          השבוע בחרתי להראות אהבה בדרך שבן או בת הזוג שלי באמת מרגישים.
+          בחרתם מחווה אחת קטנה לשבוע הקרוב.
           <br />
-          מחווה אחת קטנה. השפעה גדולה.
+          עכשיו פשוט נסו אותה.
+          <br />
+          אל תנסו לשנות הכול. רק את הדבר הקטן שבחרתם.
         </p>
       </div>
       {gesture.trim() && (
@@ -753,8 +755,16 @@ function FinishScreen({
           <p>{gesture}</p>
         </article>
       )}
+      <article className="soft-card">
+        <h3>בעוד כשבוע נשמח לשמוע</h3>
+        <ul className="gentle-list">
+          <li>האם הצלחתם לבצע את המחווה?</li>
+          <li>האם בן או בת הזוג הרגישו אהובים יותר?</li>
+          <li>ומה למדתם בדרך.</li>
+        </ul>
+      </article>
       <button className="primary-button" type="button" onClick={onRestart}>
-        נתראה בעוד שבוע
+        סיימנו
       </button>
     </div>
   );

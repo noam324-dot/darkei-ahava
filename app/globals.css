@@ -1337,6 +1337,16 @@ h4 {
   line-height: 1.75;
 }
 
+.gentle-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0 1.1rem 0 0;
+  color: var(--muted);
+  font-size: 1.02rem;
+  line-height: 1.75;
+}
+
 .love-path small {
   display: block;
   margin-top: 2px;
