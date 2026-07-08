@@ -249,7 +249,7 @@ export default function CoupleApp() {
       genderTrack,
       questionIndex: 0,
       answers: {},
-      screen: "prep",
+      screen: "quiz",
     }));
   }
 
@@ -303,19 +303,19 @@ export default function CoupleApp() {
         {currentScreen === "intro" && (
           <IntroScreen
             onBack={() => goTo("welcome")}
+            onNext={() => goTo("prep")}
+          />
+        )}
+
+        {currentScreen === "prep" && (
+          <PreparationScreen
+            onBack={() => goTo("intro")}
             onNext={() => goTo("participant")}
           />
         )}
 
         {currentScreen === "participant" && (
-          <ParticipantScreen onBack={() => goTo("intro")} onStart={startQuiz} />
-        )}
-
-        {currentScreen === "prep" && (
-          <PreparationScreen
-            onBack={() => goTo("participant")}
-            onNext={() => goTo("quiz")}
-          />
+          <ParticipantScreen onBack={() => goTo("prep")} onStart={startQuiz} />
         )}
 
         {currentScreen === "quiz" && (
@@ -329,7 +329,7 @@ export default function CoupleApp() {
             onAnswer={answerCurrent}
             onBack={() =>
               state.questionIndex === 0
-                ? goTo("prep")
+                ? goTo("participant")
                 : setState((current) => ({
                     ...current,
                     questionIndex: current.questionIndex - 1,
@@ -530,17 +530,20 @@ function PreparationScreen({
       </div>
       <div className="prep-copy">
         <h2>רגע לפני שמתחילים ❤️</h2>
+        <p>ברוכים הבאים ל&apos;דרכי האהבה&apos;.</p>
+        <p>
+          בדקות הקרובות תצאו למסע קטן של היכרות. אין כאן תשובות נכונות או לא
+          נכונות, אלא הזדמנות להכיר טוב יותר את הדרך שבה כל אחד מכם מרגיש
+          אהוב.
+        </p>
         <p>קחו לעצמכם כ־15 דקות של שקט.</p>
         <p>שבו אחד ליד השני עם טלפון אחד.</p>
         <p>
           בחרו מי יתחיל, ולאחר שהוא יסיים פשוט העבירו את הטלפון לבן או בת
           הזוג.
         </p>
-        <p>
-          אל תנסו להשפיע על הבחירות של השני – זו הזדמנות להכיר טוב יותר את
-          הדרך שבה כל אחד מכם מרגיש אהוב.
-        </p>
-        <p>בהצלחה! ❤️</p>
+        <p>נסו לא להשפיע על הבחירות של השני, אלא פשוט להתבונן ולהכיר.</p>
+        <p>מאחלים לכם זמן נעים יחד ❤️</p>
       </div>
       <label className="ready-check">
         <input
@@ -548,7 +551,7 @@ function PreparationScreen({
           type="checkbox"
           onChange={(event) => setIsReady(event.target.checked)}
         />
-        <span>אנחנו יושבים יחד ואפשר להתחיל</span>
+        <span>❤️ אנחנו יושבים יחד ומוכנים להתחיל</span>
       </label>
       <div className="footer-actions">
         <button className="ghost-button" type="button" onClick={onBack}>
@@ -823,6 +826,22 @@ function FinishScreen({
           <li>האם בן או בת הזוג הרגישו אהובים יותר?</li>
           <li>ומה למדתם בדרך.</li>
         </ul>
+      </article>
+      <article className="soft-card thank-you-card">
+        <p>❤️ תודה רבה שהקדשתם זמן לזוגיות שלכם.</p>
+        <p>
+          &quot;דרכי האהבה&quot; היא אפליקציה שנבנתה מתוך רצון לעזור לזוגות להכיר
+          טוב יותר זה את זה, והיא עדיין נמצאת בשלבי הפיתוח הראשונים.
+        </p>
+        <p>
+          אם במהלך השימוש עלו לכם רעיונות, הערות או דברים שלדעתכם אפשר לשפר –
+          נשמח מאוד לשמוע.
+        </p>
+        <p>
+          המשוב שלכם יעזור לנו להפוך את &quot;דרכי האהבה&quot; לכלי טוב ומועיל עבור
+          זוגות רבים נוספים.
+        </p>
+        <p>תודה רבה ובהצלחה בדרך המשותפת שלכם. ❤️</p>
       </article>
       <button className="primary-button" type="button" onClick={onRestart}>
         סיימנו

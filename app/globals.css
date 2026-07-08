@@ -1391,6 +1391,15 @@ h4 {
   line-height: 1.75;
 }
 
+.thank-you-card {
+  display: grid;
+  gap: 10px;
+}
+
+.thank-you-card p {
+  margin: 0;
+}
+
 .love-path small {
   display: block;
   margin-top: 2px;
