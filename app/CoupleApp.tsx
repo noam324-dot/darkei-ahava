@@ -184,31 +184,13 @@ const questionTextOverrides: Record<string, string> = {
   m01: "אשתי אומרת לי תודה על דבר שעשיתי.",
   m06: "אשתי אומרת לי שהיא מעריכה את המאמץ שאני משקיע.",
   m10: "אשתי נותנת לי חיבוק ברגע שמתאים לשנינו.",
-  m11: "אשתי מביעה הערכה כלפיי במילים ברורות.",
-  m13: "אשתי מביאה לי משהו קטן שהיא יודעת שישמח אותי.",
   m14: "אשתי מטפלת בדבר קטן שחיכה לי כדי להקל עליי.",
   m19: "אשתי לוקחת על עצמה דבר קטן כשיש לי עומס.",
-  m20: "אשתי יושבת קרוב אליי במקום שנעים לשנינו.",
-  m22: "אשתי מציעה שנקדיש זמן לדבר או ללמוד משהו קצר יחד.",
-  m23: "אשתי מכינה לי משהו קטן לדרך או ליום עמוס.",
-  m24: "אשתי עוזרת לי להתארגן לרגע עמוס בלי שאבקש.",
-  m27: "אשתי מניחה בצד הסחות דעת כדי להיות איתי.",
-  m29: "אשתי מסייעת לי לסיים דבר קטן שמחכה.",
-  m30: "אשתי מתקרבת אליי כשאנחנו עומדים או יושבים יחד.",
   w01: "בעלי אומר לי תודה על דבר שעשיתי.",
   w06: "בעלי אומר לי שהוא מעריך את המאמץ שאני משקיעה.",
   w10: "בעלי נותן לי חיבוק ברגע שמתאים לשנינו.",
-  w11: "בעלי מביע הערכה כלפיי במילים ברורות.",
-  w13: "בעלי מביא לי משהו קטן שהוא יודע שישמח אותי.",
   w14: "בעלי מטפל בדבר קטן שחיכה לי כדי להקל עליי.",
   w19: "בעלי לוקח על עצמו דבר קטן כשיש לי עומס.",
-  w20: "בעלי יושב קרוב אליי במקום שנעים לשנינו.",
-  w22: "בעלי מציע שנקדיש זמן לדבר או ללמוד משהו קצר יחד.",
-  w23: "בעלי מכין לי משהו קטן לדרך או ליום עמוס.",
-  w24: "בעלי עוזר לי להתארגן לרגע עמוס בלי שאבקש.",
-  w27: "בעלי מניח בצד הסחות דעת כדי להיות איתי.",
-  w29: "בעלי מסייע לי לסיים דבר קטן שמחכה.",
-  w30: "בעלי מתקרב אליי כשאנחנו עומדים או יושבים יחד.",
 };
 
 const itemsByTrack: Record<GenderTrack, Item[]> = {
@@ -239,6 +221,7 @@ export default function CoupleApp() {
     (item) => state.answers[item.id] !== undefined,
   ).length;
   const progress = Math.round((answeredCount / items.length) * 100);
+  const currentQuestionIndex = Math.min(state.questionIndex, items.length - 1);
 
   function goTo(screen: CoupleScreen) {
     setState((current) => ({ ...current, screen }));
@@ -256,8 +239,8 @@ export default function CoupleApp() {
   }
 
   function answerCurrent(value: number) {
-    const item = items[state.questionIndex];
-    const nextIndex = state.questionIndex + 1;
+    const item = items[currentQuestionIndex];
+    const nextIndex = currentQuestionIndex + 1;
 
     setState((current) => ({
       ...current,
@@ -337,18 +320,18 @@ export default function CoupleApp() {
         {currentScreen === "quiz" && (
           <QuizScreen
             answers={typedIntro.answers}
-            item={items[state.questionIndex]}
-            questionIndex={state.questionIndex}
+            item={items[currentQuestionIndex]}
+            questionIndex={currentQuestionIndex}
             questionTotal={items.length}
             progress={progress}
-            selectedValue={state.answers[items[state.questionIndex].id]}
+            selectedValue={state.answers[items[currentQuestionIndex].id]}
             onAnswer={answerCurrent}
             onBack={() =>
-              state.questionIndex === 0
+              currentQuestionIndex === 0
                 ? goTo("participant")
                 : setState((current) => ({
                     ...current,
-                    questionIndex: current.questionIndex - 1,
+                    questionIndex: currentQuestionIndex - 1,
                   }))
             }
           />
