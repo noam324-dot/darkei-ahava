@@ -19,7 +19,8 @@ type CoupleScreen =
   | "welcome"
   | "intro"
   | "pathChoice"
-  | "practiceSoon"
+  | "practiceChallenge"
+  | "practiceSummary"
   | "participant"
   | "prep"
   | "quiz"
@@ -53,6 +54,7 @@ type CoupleState = {
   answers: Record<string, number>;
   partnerSelections: string[];
   chosenGesture: string;
+  weeklyChallengeSelections: string[];
 };
 
 const typedIntro = intro as Content;
@@ -66,6 +68,7 @@ const initialState: CoupleState = {
   answers: {},
   partnerSelections: [],
   chosenGesture: "",
+  weeklyChallengeSelections: [],
 };
 
 const categoryText: Record<CategoryId, string> = {
@@ -110,6 +113,22 @@ const introLovePaths = [
     title: "מחוות ומתנות",
     text: 'הפתעות קטנות שמראות: "חשבתי עליך."',
   },
+];
+
+const practiceCategoryLabels: Record<CategoryId, string> = {
+  words: "מילים טובות",
+  quality_time: "זמן איכות",
+  gifts: "מתנות ומחוות",
+  acts_of_service: "מעשי שירות",
+  touch: "מגע וקרבה",
+};
+
+const practiceCategoryOrder: CategoryId[] = [
+  "words",
+  "quality_time",
+  "gifts",
+  "acts_of_service",
+  "touch",
 ];
 
 const loveActions: Record<CategoryId, LoveAction[]> = {
@@ -263,6 +282,19 @@ export default function CoupleApp() {
     });
   }
 
+  function toggleWeeklyChallengeSelection(actionId: string) {
+    setState((current) => {
+      const selected = current.weeklyChallengeSelections;
+      const weeklyChallengeSelections = selected.includes(actionId)
+        ? selected.filter((item) => item !== actionId)
+        : selected.length < 5
+          ? [...selected, actionId]
+          : selected;
+
+      return { ...current, weeklyChallengeSelections };
+    });
+  }
+
   return (
     <main className="shell couple-shell">
       <div className="ambient ambient-one" />
@@ -295,14 +327,25 @@ export default function CoupleApp() {
         {currentScreen === "pathChoice" && (
           <PathChoiceScreen
             onBack={() => goTo("intro")}
-            onPractice={() => goTo("practiceSoon")}
+            onPractice={() => goTo("practiceChallenge")}
             onQuestionnaire={() => goTo("prep")}
           />
         )}
 
-        {currentScreen === "practiceSoon" && (
-          <PracticeSoonScreen
+        {currentScreen === "practiceChallenge" && (
+          <PracticeChallengeScreen
             onBack={() => goTo("pathChoice")}
+            onNext={() => goTo("practiceSummary")}
+            onToggle={toggleWeeklyChallengeSelection}
+            selected={state.weeklyChallengeSelections}
+          />
+        )}
+
+        {currentScreen === "practiceSummary" && (
+          <PracticeSummaryScreen
+            onBack={() => goTo("practiceChallenge")}
+            onFinish={() => goTo("welcome")}
+            selected={state.weeklyChallengeSelections}
           />
         )}
 
@@ -537,18 +580,116 @@ function PathChoiceScreen({
   );
 }
 
-function PracticeSoonScreen({ onBack }: { onBack: () => void }) {
+function PracticeChallengeScreen({
+  onBack,
+  onNext,
+  onToggle,
+  selected,
+}: {
+  onBack: () => void;
+  onNext: () => void;
+  onToggle: (actionId: string) => void;
+  selected: string[];
+}) {
+  return (
+    <div className="screen-block practice-screen">
+      <ScreenHeader
+        eyebrow="תרגול שבועי"
+        title="אתגר האהבה השבועי"
+        text="בחרו עד 5 מחוות קטנות שתרצו לנסות השבוע. אין צורך להספיק הכול, רק לפתוח כיוון טוב."
+      />
+      <p className="selection-count">{selected.length}/5 נבחרו</p>
+      <div className="practice-category-list">
+        {practiceCategoryOrder.map((categoryId) => (
+          <section className="practice-category" key={categoryId}>
+            <h3>
+              <span aria-hidden="true">{categoryIcons[categoryId]}</span>
+              {practiceCategoryLabels[categoryId]}
+            </h3>
+            <div className="gesture-list">
+              {loveActions[categoryId].map((action) => {
+                const isSelected = selected.includes(action.id);
+                const isDisabled = !isSelected && selected.length >= 5;
+
+                return (
+                  <button
+                    className={
+                      isSelected ? "gesture-card selected" : "gesture-card"
+                    }
+                    disabled={isDisabled}
+                    key={action.id}
+                    type="button"
+                    onClick={() => onToggle(action.id)}
+                  >
+                    <span aria-hidden="true">{isSelected ? "✓" : "○"}</span>
+                    <b>{action.text}</b>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        ))}
+      </div>
+      <div className="footer-actions">
+        <button className="ghost-button" type="button" onClick={onBack}>
+          חזרה
+        </button>
+        <button
+          className="primary-button"
+          disabled={selected.length === 0}
+          type="button"
+          onClick={onNext}
+        >
+          בחרתי את האתגר השבועי שלי
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function PracticeSummaryScreen({
+  onBack,
+  onFinish,
+  selected,
+}: {
+  onBack: () => void;
+  onFinish: () => void;
+  selected: string[];
+}) {
+  const selectedActions = selected
+    .map((actionId) => findLoveAction(actionId))
+    .filter((action): action is LoveAction => Boolean(action));
+
   return (
     <div className="screen-block finish-screen">
       <div className="welcome-heart" aria-hidden="true">
-        ❤️
+        🌱
+      </div>
+      <div>
+        <h1>האתגר השבועי שלכם</h1>
+        <p className="lead-text">
+          בחרתם כמה מחוות קטנות לנסות השבוע.
+          <br />
+          התחילו מאחת מהן, בזמן שמתאים לכם, ותנו לאהבה מקום פשוט ביומיום.
+        </p>
       </div>
       <article className="soft-card">
-        <p>האפשרות לבחירת מחוות תהיה זמינה בקרוב ❤️</p>
+        <h3>המחוות שבחרתם</h3>
+        <ul className="gentle-list">
+          {selectedActions.map((action) => (
+            <li key={action.id}>{action.text}</li>
+          ))}
+        </ul>
       </article>
-      <button className="ghost-button" type="button" onClick={onBack}>
-        חזרה
-      </button>
+      <ContactFeedbackCard />
+      <div className="footer-actions">
+        <button className="ghost-button" type="button" onClick={onBack}>
+          חזרה
+        </button>
+        <button className="primary-button" type="button" onClick={onFinish}>
+          סיימנו להיום
+        </button>
+      </div>
     </div>
   );
 }
@@ -913,10 +1054,24 @@ function FinishScreen({
         </p>
         <p>תודה רבה ובהצלחה בדרך המשותפת שלכם. ❤️</p>
       </article>
+      <ContactFeedbackCard />
       <button className="primary-button" type="button" onClick={onRestart}>
         סיימנו
       </button>
     </div>
+  );
+}
+
+function ContactFeedbackCard() {
+  return (
+    <article className="soft-card contact-card" aria-label="יצירת קשר ומשוב">
+      <h3>דרכי האהבה ❤️</h3>
+      <p>לעזור לאנשים לדעת איך לאהוב את האחר בדרך המתאימה ביותר עבורו.</p>
+      <p>נשמח לשמוע רעיונות, הערות ומשובים.</p>
+      <a href="mailto:darkeiahava.app@gmail.com">
+        📧 darkeiahava.app@gmail.com
+      </a>
+    </article>
   );
 }
 
@@ -1038,7 +1193,8 @@ function getScreenLabel(screen: CoupleScreen) {
     welcome: "פתיחה",
     intro: "משתתף",
     pathChoice: "בחירה",
-    practiceSoon: "בקרוב",
+    practiceChallenge: "אתגר",
+    practiceSummary: "סיכום",
     participant: "משתתף",
     prep: "הכנה",
     quiz: "שאלון",
@@ -1049,4 +1205,10 @@ function getScreenLabel(screen: CoupleScreen) {
   };
 
   return labels[screen];
+}
+
+function findLoveAction(actionId: string) {
+  return practiceCategoryOrder
+    .flatMap((categoryId) => loveActions[categoryId])
+    .find((action) => action.id === actionId);
 }
