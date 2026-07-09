@@ -18,6 +18,8 @@ type GenderTrack = "man" | "woman";
 type CoupleScreen =
   | "welcome"
   | "intro"
+  | "pathChoice"
+  | "practiceSoon"
   | "participant"
   | "prep"
   | "quiz"
@@ -303,13 +305,27 @@ export default function CoupleApp() {
         {currentScreen === "intro" && (
           <IntroScreen
             onBack={() => goTo("welcome")}
-            onNext={() => goTo("prep")}
+            onNext={() => goTo("pathChoice")}
+          />
+        )}
+
+        {currentScreen === "pathChoice" && (
+          <PathChoiceScreen
+            onBack={() => goTo("intro")}
+            onPractice={() => goTo("practiceSoon")}
+            onQuestionnaire={() => goTo("prep")}
+          />
+        )}
+
+        {currentScreen === "practiceSoon" && (
+          <PracticeSoonScreen
+            onBack={() => goTo("pathChoice")}
           />
         )}
 
         {currentScreen === "prep" && (
           <PreparationScreen
-            onBack={() => goTo("intro")}
+            onBack={() => goTo("pathChoice")}
             onNext={() => goTo("participant")}
           />
         )}
@@ -479,6 +495,77 @@ function IntroScreen({
           ממשיכים
         </button>
       </div>
+    </div>
+  );
+}
+
+function PathChoiceScreen({
+  onBack,
+  onPractice,
+  onQuestionnaire,
+}: {
+  onBack: () => void;
+  onPractice: () => void;
+  onQuestionnaire: () => void;
+}) {
+  return (
+    <div className="screen-block path-choice-screen">
+      <ScreenHeader
+        eyebrow="בוחרים כיוון"
+        title="מה תרצו לעשות היום?"
+        text="אפשר להתחיל בגילוי דרכי האהבה, או להמשיך בעתיד ישר לתרגול מחוות קטנות."
+      />
+      <div className="choice-flow-grid">
+        <article className="choice-flow-card">
+          <div className="choice-flow-icon" aria-hidden="true">
+            ❤️
+          </div>
+          <div>
+            <h3>להכיר את דרכי האהבה שלי</h3>
+            <p>
+              אם זו הפעם הראשונה שלכם, או אם תרצו לגלות מחדש מה גורם לכם
+              להרגיש אהובים.
+            </p>
+          </div>
+          <button className="primary-button" type="button" onClick={onQuestionnaire}>
+            להתחיל את השאלון
+          </button>
+        </article>
+        <article className="choice-flow-card">
+          <div className="choice-flow-icon" aria-hidden="true">
+            🌱
+          </div>
+          <div>
+            <h3>להתאמן באהבה השבוע</h3>
+            <p>
+              אם אתם כבר מכירים את דרכי האהבה שלכם, תוכלו לבחור מחוות קטנות
+              לשבוע הקרוב ולהתחיל לתרגל.
+            </p>
+          </div>
+          <button className="primary-button" type="button" onClick={onPractice}>
+            לבחירת מחוות
+          </button>
+        </article>
+      </div>
+      <button className="ghost-button" type="button" onClick={onBack}>
+        חזרה
+      </button>
+    </div>
+  );
+}
+
+function PracticeSoonScreen({ onBack }: { onBack: () => void }) {
+  return (
+    <div className="screen-block finish-screen">
+      <div className="welcome-heart" aria-hidden="true">
+        ❤️
+      </div>
+      <article className="soft-card">
+        <p>האפשרות לבחירת מחוות תהיה זמינה בקרוב ❤️</p>
+      </article>
+      <button className="ghost-button" type="button" onClick={onBack}>
+        חזרה
+      </button>
     </div>
   );
 }
@@ -967,6 +1054,8 @@ function getScreenLabel(screen: CoupleScreen) {
   const labels: Record<CoupleScreen, string> = {
     welcome: "פתיחה",
     intro: "משתתף",
+    pathChoice: "בחירה",
+    practiceSoon: "בקרוב",
     participant: "משתתף",
     prep: "הכנה",
     quiz: "שאלון",
